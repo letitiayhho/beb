@@ -62,17 +62,14 @@ def get_accuracy(preds, labels):
     labels_flat = labels.flatten()
     return np.sum(pred_flat == labels_flat) / len(labels_flat)
 
-def main():
+def fine_tune(corpus_name, train_corpus, dev_corpus, column_names):
+
     device = get_cuda_device()
 
-    bert_corpus = 'bert-base-uncased'
-
-    train_corpus_df = parse_csv(
-            '../corpora/cola_public/raw/in_domain_train.tsv',
-            ['sentence_source', 'label', 'label_notes', 'sentence'])
+    train_corpus_df = parse_csv(train_corpus, column_names)
     input_ids, labels, attention_masks = RENAME_ME(
             train_corpus_df,
-            bert_corpus,
+            corpus_name,
             True,
             MAX_LEN)
     train_inputs, test_inputs, train_labels, test_labels = train_test_split(
@@ -88,7 +85,7 @@ def main():
     train_data_loader = get_data_loader(train_inputs, train_labels, train_masks, BATCH_SIZE)
     test_data_loader = get_data_loader(test_inputs, test_labels, test_masks, BATCH_SIZE)
 
-    model = BertForSequenceClassification.from_pretrained(bert_corpus, num_labels=2)
+    model = BertForSequenceClassification.from_pretrained(corpus_name, num_labels=2)
     model.cuda()
 
     param_optimizer = list(model.named_parameters())
@@ -129,12 +126,10 @@ def main():
             #logits = logits.detach().cpu().numpy()
             #label_ids = labels.to('cpu').numpy()
 
-    dev_corpus_df = parse_csv(
-            '../corpora/cola_public/raw/out_of_domain_dev.tsv',
-           ['sentence_source', 'label', 'label_notes', 'sentence'])
+    dev_corpus_df = parse_csv(dev_corpus, column_names)
     dev_input_ids, dev_labels, dev_attentions_masks = RENAME_ME(
             dev_corpus_df,
-            bert_corpus,
+            corpus_name,
             True,
             MAX_LEN)
     dev_data_loader = get_data_loader(dev_input_ids, dev_labels, dev_masks, BATCH_SIZE)
@@ -164,4 +159,10 @@ def main():
 
     matthews_corrcoef(flat_true_labels, flat_predictions)
 
-main()
+if __name__ == '__main__':
+
+    fine_tune('bert-base-uncased',
+         '../corpora/cola_public/raw/in_domain_train.tsv',
+         '../corpora/cola_public/raw/out_of_domain_dev.tsv',
+         ['sentence_source', 'label', 'label_notes', 'sentence'])
+
