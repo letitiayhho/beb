@@ -64,7 +64,7 @@ pyasn1==0.4.2
 pycairo==1.16.2
 pycrypto==2.6.1
 pycups==1.9.73
-Pygments==2.2.0
+Pygments==2.7.4
 pygobject==3.26.1
 pylint==2.4.3
 pymacaroons==0.13.0
