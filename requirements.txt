@@ -81,7 +81,7 @@ pyxattr==0.6.0
 pyxdg==0.25
 PyYAML==5.1.2
 regex==2019.11.1
-reportlab==3.4.0
+reportlab==3.5.55
 requests==2.22.0
 requests-unixsocket==0.1.5
 roman==2.0.0
